@@ -18,7 +18,6 @@ struct ContentView: View {
                 LazyVGrid(columns: columns) {
                     ForEach(MockData.frameworks) { framework in
                         FrameworkCard(framerWork: framework).onTapGesture {
-                            print("hello")
                             viewModal.selectedFramerWor = framework
                         }
                     }
@@ -54,6 +53,7 @@ struct FrameworkCard: View {
 struct FrameworkDetails: View {
     let framerWork: Framework
     @Binding var isShowFramerwork: Bool
+    @State private var isSafariView = false
     
     var body: some View {
         VStack {
@@ -79,10 +79,12 @@ struct FrameworkDetails: View {
 
             Spacer()
             Button("Learn More") {
-
+                isSafariView = true
             }.font(.title2).fontWeight(.semibold).frame(width: 200, height: 40)
                 .background(Color.red).foregroundColor(Color.white)
                 .cornerRadius(8)
-        }.padding()
+        }.padding().sheet(isPresented: $isSafariView) {
+            SafariView(url: URL(string: "https://www.youtube.com/")!)
+        }
     }
 }
