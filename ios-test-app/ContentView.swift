@@ -8,17 +8,81 @@
 import SwiftUI
 
 struct ContentView: View {
+    let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
+
+    @StateObject var viewModal = FrameworkViewModal()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            ScrollView {
+                LazyVGrid(columns: columns) {
+                    ForEach(MockData.frameworks) { framework in
+                        FrameworkCard(framerWork: framework).onTapGesture {
+                            print("hello")
+                            viewModal.selectedFramerWor = framework
+                        }
+                    }
+
+                }
+            }
+            .navigationTitle("Menu")
+            .sheet(isPresented: $viewModal.isShowFramerwork) {
+                FrameworkDetails(
+                    framerWork: viewModal.selectedFramerWor
+                    ?? MockData.sampleFramework, isShowFramerwork: $viewModal.isShowFramerwork)
+            }
         }
-        .padding()
     }
 }
 
 #Preview {
     ContentView()
+}
+
+struct FrameworkCard: View {
+    let framerWork: Framework
+
+    var body: some View {
+        VStack {
+            Image(framerWork.urlString).resizable().frame(width: 64, height: 64)
+            Text(framerWork.name).font(.title2).fontWeight(.semibold)
+                .scaledToFit().minimumScaleFactor(0.6)
+        }.padding()
+    }
+}
+
+struct FrameworkDetails: View {
+    let framerWork: Framework
+    @Binding var isShowFramerwork: Bool
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Spacer()
+                Button(
+                    action: {
+                        isShowFramerwork = false
+                    },
+                    label: {
+                        Image(systemName: "xmark").foregroundStyle(
+                            Color(.label)
+                        ).imageScale(.large)
+                    })
+            }
+            Spacer()
+            Image(framerWork.urlString).resizable().frame(width: 64, height: 64)
+            Spacer()
+            Text(framerWork.name).font(.title2).fontWeight(.semibold)
+                .scaledToFit().minimumScaleFactor(0.6)
+
+            Text(framerWork.description).font(.title2)
+
+            Spacer()
+            Button("Learn More") {
+
+            }.font(.title2).fontWeight(.semibold).frame(width: 200, height: 40)
+                .background(Color.red).foregroundColor(Color.white)
+                .cornerRadius(8)
+        }.padding()
+    }
 }
